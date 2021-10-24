@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from torchtext.legacy import data
 import torchtext
 
 from seq2seq.dataset import SourceField, TargetField
@@ -9,19 +10,19 @@ class TestField(unittest.TestCase):
 
     def test_sourcefield(self):
         field = SourceField()
-        self.assertTrue(isinstance(field, torchtext.data.Field))
+        self.assertTrue(isinstance(field, data.Field))
         self.assertTrue(field.batch_first)
         self.assertTrue(field.include_lengths)
 
     def test_sourcefield_with_wrong_setting(self):
         field = SourceField(batch_first=False, include_lengths=False)
-        self.assertTrue(isinstance(field, torchtext.data.Field))
+        self.assertTrue(isinstance(field, data.Field))
         self.assertTrue(field.batch_first)
         self.assertTrue(field.include_lengths)
 
     def test_targetfield(self):
         field = TargetField()
-        self.assertTrue(isinstance(field, torchtext.data.Field))
+        self.assertTrue(isinstance(field, data.Field))
         self.assertTrue(field.batch_first)
 
         processed = field.preprocessing([None])
@@ -29,7 +30,7 @@ class TestField(unittest.TestCase):
 
     def test_targetfield_with_other_setting(self):
         field = TargetField(batch_first=False, preprocessing=lambda seq: seq + seq)
-        self.assertTrue(isinstance(field, torchtext.data.Field))
+        self.assertTrue(isinstance(field, data.Field))
         self.assertTrue(field.batch_first)
 
         processed = field.preprocessing([None])
@@ -39,9 +40,9 @@ class TestField(unittest.TestCase):
         test_path = os.path.dirname(os.path.realpath(__file__))
         data_path = os.path.join(test_path, 'data/eng-fra.txt')
         field = TargetField()
-        train = torchtext.data.TabularDataset(
+        train = data.TabularDataset(
             path=data_path, format='tsv',
-            fields=[('src', torchtext.data.Field()), ('trg', field)]
+            fields=[('src', data.Field()), ('trg', field)]
         )
         self.assertTrue(field.sos_id is None)
         self.assertTrue(field.eos_id is None)

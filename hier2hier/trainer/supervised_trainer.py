@@ -6,7 +6,7 @@ from attrdict import AttrDict
 
 import torch
 import torch.nn as nn
-import torchtext
+from torchtext.legacy import data, vocab
 from torch import optim
 
 import hier2hier
@@ -266,7 +266,7 @@ class SupervisedTrainer(object):
         appConfig = self.appConfig
         modelArgs = self.modelArgs
 
-        batch_iterator = torchtext.data.BucketIterator(
+        batch_iterator = data.BucketIterator(
             dataset=training_data, batch_size=appConfig.batch_size,
             sort=False, sort_within_batch=False,
             repeat=False)

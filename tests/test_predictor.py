@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from torchtext.legacy import data
 import torchtext
 
 from seq2seq.evaluator import Predictor
@@ -14,7 +15,7 @@ class TestPredictor(unittest.TestCase):
         test_path = os.path.dirname(os.path.realpath(__file__))
         src = SourceField()
         trg = TargetField()
-        dataset = torchtext.data.TabularDataset(
+        dataset = data.TabularDataset(
             path=os.path.join(test_path, 'data/eng-fra.txt'), format='tsv',
             fields=[('src', src), ('trg', trg)],
         )

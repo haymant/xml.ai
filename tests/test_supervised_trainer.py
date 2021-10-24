@@ -2,6 +2,7 @@ import unittest
 import os
 
 import mock
+from torchtext.legacy import data
 import torchtext
 
 from seq2seq.dataset import SourceField, TargetField
@@ -13,7 +14,7 @@ class TestSupervisedTrainer(unittest.TestCase):
         test_path = os.path.dirname(os.path.realpath(__file__))
         src = SourceField()
         tgt = TargetField()
-        self.dataset = torchtext.data.TabularDataset(
+        self.dataset = data.TabularDataset(
             path=os.path.join(test_path, 'data/eng-fra.txt'), format='tsv',
             fields=[('src', src), ('tgt', tgt)],
         )

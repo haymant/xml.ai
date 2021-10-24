@@ -3,6 +3,7 @@ import logging, copy
 from orderedattrdict import AttrDict
 from collections import Counter
 
+from torchtext.legacy import data, vocab
 import torchtext
 
 import xml.etree.ElementTree as ET
@@ -65,6 +66,7 @@ def buildVocabs(hier_dataset, max_size=None):
 
                 for sym in allConcateNated:
                     curSymbolCounters.all[sym] += 1
+
         curSymbolCounters.all[SYM_SOS] = (
             curSymbolCounters.text[SYM_SOS]
             + curSymbolCounters.tags[SYM_SOS]
@@ -74,22 +76,22 @@ def buildVocabs(hier_dataset, max_size=None):
         curSymbolCounters.all[SYM_EOS] = curSymbolCounters.all[SYM_SOS]
 
         vocabs = AttrDict({})
-        vocabs.tags = torchtext.vocab.Vocab(curSymbolCounters.tags, max_size=max_size)
-        vocabs.attrs = torchtext.vocab.Vocab(curSymbolCounters.attrs, max_size=max_size)
-        vocabs.attrValues = torchtext.vocab.Vocab(
+        vocabs.tags = vocab.Vocab(curSymbolCounters.tags, max_size=max_size)
+        vocabs.attrs = vocab.Vocab(curSymbolCounters.attrs, max_size=max_size)
+        vocabs.attrValues = vocab.Vocab(
             curSymbolCounters.attrValues,
             max_size=max_size,
             specials=[SYM_SOS, SYM_EOS, SYM_PAD],
             )
-        vocabs.text = torchtext.vocab.Vocab(
+        vocabs.text = vocab.Vocab(
             curSymbolCounters.text,
             max_size=max_size,
             specials=[SYM_SOS, SYM_EOS, SYM_PAD],
         )
-        vocabs.all = torchtext.vocab.Vocab(
+        vocabs.all = vocab.Vocab(
             curSymbolCounters.all,
             max_size=max_size,
-            specials=[SYM_SOS, SYM_EOS, SYM_PAD, "<", ">", "/", " "],
+            specials=[SYM_SOS, SYM_EOS, SYM_PAD, "<", ">", "/", " ", "="],
         )
         setattr(resultVocabs, srcOrTgt, vocabs)
 
@@ -104,7 +106,7 @@ def buildVocabs(hier_dataset, max_size=None):
 
     return resultVocabs.src, resultVocabs.tgt, tgtToSrcVocabMap
 
-class SourceField(torchtext.data.RawField):
+class SourceField(data.RawField):
     """ Wrapper class of torchtext.data.Field that forces batch_first and include_lengths to be True. """
 
     def __init__(self, **kwargs):
@@ -115,7 +117,7 @@ class SourceField(torchtext.data.RawField):
     def setVocabs(self, srcVocabs):
         self.vocabs = srcVocabs
 
-class TargetField(torchtext.data.RawField):
+class TargetField(data.RawField):
     """ Wrapper class of torchtext.data.Field that forces batch_first to be True and prepend <sos> and append <eos> to sequences in preprocessing step.
 
     Attributes:

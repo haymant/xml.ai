@@ -1,19 +1,20 @@
 import os, glob
 from attrdict import AttrDict
 
-import torch, torchtext
+import torch
+from torchtext.legacy import data
 from torchtext.vocab import Vocab
 
 import xml.etree.ElementTree as ET
 from .randomXml import randomXml
 from hier2hier.util import invertPermutation, methodProfiler, lastCallProfile, longTensor, AppMode
 
-class Hier2HierExample(torchtext.data.Example):
+class Hier2HierExample(data.Example):
     def __init__(self, inXml, outStr):
         self.src = inXml
         self.tgt = outStr
 
-class GeneratedXmlDataset(torchtext.data.Dataset):
+class GeneratedXmlDataset(data.Dataset):
     @staticmethod
     def defaultOutputTransform(tree):
         allNodes = list(tree.getroot().iter())
@@ -36,7 +37,7 @@ class GeneratedXmlDataset(torchtext.data.Dataset):
         super().__init__(examples, fields=fields)
 
 
-class Hier2HierDataset(torchtext.data.Dataset):
+class Hier2HierDataset(data.Dataset):
     def __init__(self, baseFolder='train/folder_1/', fields=None, srcLoader=None, tgtLoader=None, selectPercent=None):
         # Build input file pairs.
         self.filePairs = []
@@ -72,7 +73,7 @@ class Hier2HierDataset(torchtext.data.Dataset):
 class AttrTuple(object):
     pass
 
-class Hier2HierIterator(torchtext.data.BucketIterator):
+class Hier2HierIterator(data.BucketIterator):
     def __init__(self, *argc, preprocess_batch=None, **kargv):
         if preprocess_batch is None:
             preprocess_batch = lambda x:(x, None)
